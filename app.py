@@ -19,7 +19,7 @@ if "user" not in st.session_state:
             st.error("登入失敗，請檢查帳號密碼")
 else:
     # === 頁面設定 ===
-    st.set_page_config(page_title="孕婦營養補充品劑量評估", layout="wide")
+    st.set_page_config(page_title="孕婦營養品劑量評估", layout="wide")
 
     # === 登出功能 ===
     with st.sidebar:
