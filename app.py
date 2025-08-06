@@ -73,7 +73,7 @@ else:
     st.markdown(f"""
     <div style="display:flex;align-items:center;gap:20px;">
         <img src="data:image/png;base64,{logo_base64}" style="width:200px;height:200px;border-radius:12px;" />
-        <h1 style="margin:0;">孕婦營養補充品攝取量評估工具</h1>
+        <h1 style="margin:0;">孕婦營養品攝取量評估工具</h1>
     </div>
     """, unsafe_allow_html=True)
 
