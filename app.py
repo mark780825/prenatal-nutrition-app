@@ -30,7 +30,7 @@ else:
 
     # ✅ 營養素清單（含單位）
     NUTRIENTS = [
-        "鈣(mg)", "鐵(mg)", "鎂(mg)", "鋅(mg)", "碘(mcg)", "維生素A(IU)", "維生素D(IU)", "維生素E(IU)", "維生素C(mg)",
+        "鈣(mg)", "鐵(mg)", "鎂(mg)", "鋅(mg)", "碘(mcg)", "維生素A(mcg RE)", "維生素D(IU)", "維生素E(IU)", "維生素C(mg)",
         "膽鹼(mg)", "維生素B6(mg)", "維生素B12(mg)", "葉酸(mcg)", "Omega-3(mg)"
     ]
 
@@ -41,12 +41,12 @@ else:
         "鎂(mg)": {"recommended": 75, "aggressive": 350, "upper": 350},
         "鋅(mg)": {"recommended": 5, "aggressive": 15, "upper": 35},
         "碘(mcg)": {"recommended": 25, "aggressive": 150, "upper": 1000},
-        "維生素A(IU)": {"recommended": 0, "aggressive": 1200, "upper": 5000},
+        "維生素A(mcg RE)": {"recommended": 0, "aggressive": 1200, "upper": 3000},
         "維生素D(IU)": {"recommended": 400, "aggressive": 2000, "upper": 4000},
         "維生素E(IU)": {"recommended": 0, "aggressive": 20, "upper": 400},
         "維生素C(mg)": {"recommended": 0, "aggressive": 200, "upper": 2000},
         "膽鹼(mg)": {"recommended": 150, "aggressive": 600, "upper": 7500},
-        "維生素B6(mg)": {"recommended": 0, "aggressive": 10, "upper": 100},
+        "維生素B6(mg)": {"recommended": 0, "aggressive": 10, "upper": 80},
         "維生素B12(mg)": {"recommended": 0, "aggressive": 25, "upper": float("inf")},
         "葉酸(mcg)": {"recommended": 400, "aggressive": 600, "upper": 1000},
         "Omega-3(mg)": {"recommended": 200, "aggressive": 1000, "upper": 2000},
