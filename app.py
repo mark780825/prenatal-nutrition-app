@@ -31,7 +31,7 @@ else:
     # ✅ 營養素清單（含單位）
     NUTRIENTS = [
         "鈣(mg)", "鐵(mg)", "鎂(mg)", "鋅(mg)", "碘(mcg)", "維生素A(mcg RE)", "維生素D(IU)", "維生素E(IU)", "維生素C(mg)",
-        "膽鹼(mg)", "維生素B6(mg)", "維生素B12(mg)", "葉酸(mcg)", "Omega-3(mg)"
+        "膽鹼(mg)", "維生素B6(mg)", "維生素B12(mcg)", "葉酸(mcg)", "Omega-3(mg)"
     ]
 
     # ✅ 建議攝取量表
@@ -47,7 +47,7 @@ else:
         "維生素C(mg)": {"recommended": 0, "aggressive": 200, "upper": 2000},
         "膽鹼(mg)": {"recommended": 150, "aggressive": 600, "upper": 7500},
         "維生素B6(mg)": {"recommended": 0, "aggressive": 10, "upper": 80},
-        "維生素B12(mg)": {"recommended": 0, "aggressive": 25, "upper": float("inf")},
+        "維生素B12(mcg)": {"recommended": 0, "aggressive": 25, "upper": float("inf")},
         "葉酸(mcg)": {"recommended": 400, "aggressive": 600, "upper": 1000},
         "Omega-3(mg)": {"recommended": 200, "aggressive": 1000, "upper": 2000},
     }
