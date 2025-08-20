@@ -1,0 +1,7 @@
+cd supplement_checker
+
+git status                    # ← 查看哪些檔案有變更
+
+git add .                     # ← 加入所有修改的檔案
+git commit -m "更新主程式邏輯/修正UI錯誤/新增功能"  # ← 寫一個清楚的更新說明
+git push origin main          # ← 推送更新到 GitHub

@@ -110,6 +110,7 @@ else:
             product["count"] = st.number_input("每日服用顆數", min_value=1, step=1, value=product["count"], key=f"count_{i}")
 
     st.markdown("---")
+    # 📊 計算總攝取量
     st.markdown("## 📊 總攝取量評估結果")
 
     total_intake = {n: 0.0 for n in NUTRIENTS}
@@ -122,9 +123,11 @@ else:
             if dose > 0:
                 source_detail[n].append(f"{p['name']} ({dose:.1f})")
 
+    # 📌 分類營養素
     strong = ["鈣(mg)", "鐵(mg)", "碘(mcg)", "維生素D(IU)", "葉酸(mcg)", "Omega-3(mg)"]
     optional = [n for n in NUTRIENTS if n not in strong]
 
+    # ✅ 顯示評估區塊的函式
     def show_nutrient_block(title, nutrients, bg_color):
         st.markdown(f"<div style='background-color:{bg_color};padding:10px 20px;border-radius:10px;margin-top:1rem;'><h4 style='margin:0;'>{title}</h4></div>", unsafe_allow_html=True)
         for n in nutrients:
@@ -132,24 +135,33 @@ else:
             info = DOSAGE_INFO[n]
             sources = "，來源：" + "、".join(source_detail[n]) if source_detail[n] else ""
 
+            msg = ""
             if info["upper"] == float("inf"):
                 if total < info["recommended"]:
                     color = "🔴 **未達建議量**"
+                    msg += f" <span style='color:blue;'>(距建議補充量 {info['recommended'] - total:.1f})</span>"
+                    msg += f" <span style='color:green;'>(距積極補充量 {info['aggressive'] - total:.1f})</span>"
                 elif total < info["aggressive"]:
                     color = "🔵 建議補充範圍"
+                    msg += f" <span style='color:green;'>(距積極補充量 {info['aggressive'] - total:.1f})</span>"
                 else:
                     color = "🟢 積極補充（無上限）"
             else:
                 if total < info["recommended"]:
                     color = "🔴 **未達建議量**"
+                    msg += f" <span style='color:blue;'>(距建議補充量 {info['recommended'] - total:.1f})</span>"
+                    msg += f" <span style='color:green;'>(距積極補充量 {info['aggressive'] - total:.1f})</span>"
                 elif total < info["aggressive"]:
                     color = "🔵 建議補充範圍"
+                    msg += f" <span style='color:green;'>(距積極補充量 {info['aggressive'] - total:.1f})</span>"
                 elif total < info["upper"]:
                     color = "🟢 積極補充範圍"
                 else:
                     color = "🔺 **超過上限**"
+                    msg += f" <span style='color:red;'>(超出上限 {total - info['upper']:.1f})</span>"
 
-            st.write(f"{n}: {total:.1f} → {color}{sources}")
+            st.markdown(f"{n}: {total:.1f} → {color}{msg}{sources}", unsafe_allow_html=True)
 
-    show_nutrient_block("🟥 強烈建議補充（核心營養素）", strong, "#ffeeee")
-    show_nutrient_block("🟦 次要建議補充（補足加分項）", optional, "#eaf4ff")
+    # ✅ 呼叫顯示兩組營養素區塊
+    show_nutrient_block("💪 建議補充（必要營養素）", strong, "#E8F5E9")
+    show_nutrient_block("✨ 建議補充（其他營養素）", optional, "#FFF3E0")
