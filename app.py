@@ -107,7 +107,7 @@ else:
                                               key=f"{nutrient}_{i}")
                         product["ingredients"][nutrient] = val
 
-                        with st.expander("🧮 黃醇當量計算機", expanded=False):
+                        with st.expander("🧮 視黃醇當量計算機", expanded=False):
                             st.markdown("""
                             - 💡 **補充劑型 維生素A (mcg)**：1 mcg = 1 mcg RAE  
                             - 💡 **補充劑型 維生素A (IU)**：3.33 IU = 1 mcg RAE  
