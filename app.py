@@ -1,6 +1,5 @@
-
 import streamlit as st
-from auth import login  # 你需要準備 auth.py 並內含 login(email, password) 函式
+from auth import login
 import base64
 from PIL import Image
 
@@ -18,30 +17,28 @@ if "user" not in st.session_state:
         else:
             st.error("登入失敗，請檢查帳號密碼")
 else:
-    # === 頁面設定 ===
     st.set_page_config(page_title="孕婦營養品劑量評估", layout="wide")
 
-    # === 登出功能 ===
     with st.sidebar:
         st.markdown(f"👤 使用者：{st.session_state.user['email']}")
         if st.button("🚪 登出"):
             del st.session_state["user"]
             st.rerun()
 
-    # ✅ 營養素清單（含單位）
     NUTRIENTS = [
-        "鈣(mg)", "鐵(mg)", "鎂(mg)", "鋅(mg)", "碘(mcg)", "維生素A(mcg RE)", "維生素D(IU)", "維生素E(IU)", "維生素C(mg)",
-        "膽鹼(mg)", "維生素B6(mg)", "維生素B12(mcg)", "葉酸(mcg)", "Omega-3(mg)"
+        "鈣(mg)", "鐵(mg)", "鎂(mg)", "鋅(mg)", "碘(mcg)",
+        "維生素D(IU)", "維生素E(IU)", "維生素C(mg)",
+        "膽鹼(mg)", "維生素B6(mg)", "維生素B12(mcg)", "葉酸(mcg)", "Omega-3(mg)",
+        "維生素A(mcg RAE)"
     ]
 
-    # ✅ 建議攝取量表
     DOSAGE_INFO = {
         "鈣(mg)": {"recommended": 500, "aggressive": 1500, "upper": 2500},
         "鐵(mg)": {"recommended": 0, "aggressive": 40, "upper": 40},
         "鎂(mg)": {"recommended": 75, "aggressive": 350, "upper": 350},
         "鋅(mg)": {"recommended": 5, "aggressive": 15, "upper": 35},
         "碘(mcg)": {"recommended": 25, "aggressive": 150, "upper": 1000},
-        "維生素A(mcg RE)": {"recommended": 0, "aggressive": 1200, "upper": 3000},
+        "維生素A(mcg RAE)": {"recommended": 0, "aggressive": 1200, "upper": 3000},
         "維生素D(IU)": {"recommended": 400, "aggressive": 2000, "upper": 4000},
         "維生素E(IU)": {"recommended": 0, "aggressive": 20, "upper": 400},
         "維生素C(mg)": {"recommended": 0, "aggressive": 200, "upper": 2000},
@@ -104,18 +101,42 @@ else:
             nutrient_cols = st.columns(4)
             for j, nutrient in enumerate(NUTRIENTS):
                 with nutrient_cols[j % 4]:
-                    val = st.number_input(f"{nutrient}", min_value=0.0, step=0.1, value=product["ingredients"].get(nutrient, 0.0), key=f"{nutrient}_{i}")
-                    product["ingredients"][nutrient] = val
+                    if nutrient == "維生素A(mcg RAE)":
+                        val = st.number_input(f"{nutrient}", min_value=0.0, step=0.1,
+                                              value=product["ingredients"].get(nutrient, 0.0),
+                                              key=f"{nutrient}_{i}")
+                        product["ingredients"][nutrient] = val
 
-            product["count"] = st.number_input("每日服用顆數", min_value=1, step=1, value=product["count"], key=f"count_{i}")
+                        with st.expander("🧮 黃醇當量計算機", expanded=False):
+                            st.markdown("""
+                            - 💡 **補充劑型 維生素A (mcg)**：1 mcg = 1 mcg RAE  
+                            - 💡 **補充劑型 維生素A (IU)**：3.33 IU = 1 mcg RAE  
+                            - 💡 **補充劑型 β-胡蘿蔔素 (mcg)**：2 mcg = 1 mcg RAE  
+                            - 💡 **補充劑型 β-胡蘿蔔素 (IU)**：3.33 IU = 1 mcg RAE  
+                            """)
+                            vit_a_mcg = st.number_input("補充劑型 維生素A (mcg)", min_value=0.0, step=0.1, key=f"vit_a_mcg_{i}")
+                            vit_a_iu = st.number_input("補充劑型 維生素A (IU)", min_value=0.0, step=0.1, key=f"vit_a_iu_{i}")
+                            beta_mcg = st.number_input("補充劑型 β-胡蘿蔔素 (mcg)", min_value=0.0, step=0.1, key=f"beta_mcg_{i}")
+                            beta_iu = st.number_input("補充劑型 β-胡蘿蔔素 (IU)", min_value=0.0, step=0.1, key=f"beta_iu_{i}")
+                            rae_calc = vit_a_mcg + (vit_a_iu / 3.33) + (beta_mcg / 2) + (beta_iu / 3.33)
+                            st.markdown(f"🧮 計算結果：**{rae_calc:.1f} mcg RAE**")
+                            if st.button("✅ 套用至本產品", key=f"apply_rae_{i}"):
+                                product["ingredients"]["維生素A(mcg RAE)"] = rae_calc
+                                st.rerun()
+                    else:
+                        val = st.number_input(f"{nutrient}", min_value=0.0, step=0.1,
+                                              value=product["ingredients"].get(nutrient, 0.0),
+                                              key=f"{nutrient}_{i}")
+                        product["ingredients"][nutrient] = val
+
+            product["count"] = st.number_input("每日服用顆數", min_value=1, step=1,
+                                               value=product["count"], key=f"count_{i}")
 
     st.markdown("---")
-    # 📊 計算總攝取量
     st.markdown("## 📊 總攝取量評估結果")
 
     total_intake = {n: 0.0 for n in NUTRIENTS}
     source_detail = {n: [] for n in NUTRIENTS}
-
     for p in st.session_state.products:
         for n in NUTRIENTS:
             dose = p["ingredients"][n] * p["count"]
@@ -123,18 +144,15 @@ else:
             if dose > 0:
                 source_detail[n].append(f"{p['name']} ({dose:.1f})")
 
-    # 📌 分類營養素
     strong = ["鈣(mg)", "鐵(mg)", "碘(mcg)", "維生素D(IU)", "葉酸(mcg)", "Omega-3(mg)"]
     optional = [n for n in NUTRIENTS if n not in strong]
 
-    # ✅ 顯示評估區塊的函式
     def show_nutrient_block(title, nutrients, bg_color):
         st.markdown(f"<div style='background-color:{bg_color};padding:10px 20px;border-radius:10px;margin-top:1rem;'><h4 style='margin:0;'>{title}</h4></div>", unsafe_allow_html=True)
         for n in nutrients:
             total = total_intake[n]
             info = DOSAGE_INFO[n]
             sources = "，來源：" + "、".join(source_detail[n]) if source_detail[n] else ""
-
             msg = ""
             if info["upper"] == float("inf"):
                 if total < info["recommended"]:
@@ -162,6 +180,5 @@ else:
 
             st.markdown(f"{n}: {total:.1f} → {color}{msg}{sources}", unsafe_allow_html=True)
 
-    # ✅ 呼叫顯示兩組營養素區塊
-    show_nutrient_block("💪 建議補充（必要營養素）", strong, "#E8F5E9")
-    show_nutrient_block("✨ 建議補充（其他營養素）", optional, "#FFF3E0")
+    show_nutrient_block("💪 必要營養素", strong, "#E8F5E9")
+    show_nutrient_block("✨ 次要營養素", optional, "#FFF3E0")
